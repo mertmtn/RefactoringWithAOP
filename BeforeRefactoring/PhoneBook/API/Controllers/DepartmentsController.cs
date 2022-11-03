@@ -1,7 +1,5 @@
 ﻿using Business.Abstract;
 using Entities.Concrete;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -20,29 +18,30 @@ namespace API.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            return StatusCode(200, _departmentService.GetAllDepartment());
+            var result = _departmentService.GetAllDepartment();
+            return StatusCode(result.Success ? 200 : 400, result);
         }
 
         [HttpGet("{id:int}")]
         public IActionResult GetById([FromRoute] int id)
         {
-            return StatusCode(200, _departmentService.GetDepartmentById(id));
+            var result = _departmentService.GetDepartmentById(id);
+            return StatusCode(result.Success ? 200 : 400, result);
         }
-
 
         [HttpPost]
         public IActionResult Post(Department department)
         {
-            _departmentService.AddNewDepartment(department);
-            return StatusCode(200);
+            var result = _departmentService.AddNewDepartment(department);
+            return StatusCode(result.Success ? 200 : 400, result);
         }
 
         [HttpPut]
         public IActionResult Put(Department department)
         {
-            _departmentService.UpdateDepartment(department);
-            return StatusCode(200);
+            var result = _departmentService.UpdateDepartment(department);
+            return StatusCode(result.Success ? 200 : 400,result);
         }
     }
 }
- 
+
