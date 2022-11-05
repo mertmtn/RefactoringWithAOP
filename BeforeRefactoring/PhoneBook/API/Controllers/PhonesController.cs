@@ -29,14 +29,14 @@ namespace API.Controllers
 
 
         [HttpPost]
-        public IActionResult Post(Phone phone)
+        public IActionResult Post([FromBody] Phone phone)
         {
             _phoneService.AddNewPhone(phone);
             return StatusCode(200);
         }
 
         [HttpPut]
-        public IActionResult Put(Phone phone)
+        public IActionResult Put([FromBody] Phone phone)
         {
             _phoneService.UpdatePhone(phone);
             return StatusCode(200);

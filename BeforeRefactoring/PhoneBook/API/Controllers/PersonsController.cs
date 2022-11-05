@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Core.Utilities.Results;
 using Entities.Concrete;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,18 +30,18 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post(Person person)
+        public IActionResult Post([FromBody] Person person)
         {
-            _personService.AddNewPerson(person);
-            return StatusCode(200);
+            var result = _personService.AddNewPerson(person);
+            return StatusCode(result.Success?200:400, result);
         }
 
         [HttpPut]
-        public IActionResult Put(Person person)
+        public IActionResult Put([FromBody] Person person)
         {
-            _personService.UpdatePerson(person);
-            return StatusCode(200);
-        } 
+            var result = _personService.UpdatePerson(person);
+            return StatusCode(result.Success ? 200 : 400, result);
+        }
     }
 }
  

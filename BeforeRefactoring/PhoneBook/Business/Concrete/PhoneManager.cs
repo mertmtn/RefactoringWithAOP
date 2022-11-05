@@ -1,4 +1,8 @@
 ﻿using Business.Abstract;
+using Business.ValidatonRules.FluentValidation;
+using Core.Utilities.Results;
+using Core.Utilities.Results.Error;
+using Core.Utilities.Results.Success;
 using Data.Abstract;
 using Entities.Concrete;
 using Microsoft.Extensions.Logging; 
@@ -15,25 +19,67 @@ namespace Business.Concrete
             _phoneDal = phoneDal;
         } 
 
-        public List<Phone> GetAllPhone()
+        public IDataResult<List<Phone>> GetAllPhone()
         {
             _logger.LogDebug("Inside GetAllPhone endpoint");
-            return _phoneDal.GetAll();
+            var result= _phoneDal.GetAll();
+            return new SuccessDataResult<List<Phone>>(result);
         }
 
-        public void UpdatePhone(Phone phone)
+        public IResult UpdatePhone(Phone phone)
         {
-            _phoneDal.Update(phone);
+            try
+            {
+                var validator = new PhoneValidator();
+                var validationResult = validator.Validate(phone);
+                if (!validationResult.IsValid)
+                {
+                    List<string> errorList = new();
+                    foreach (var error in validationResult.Errors)
+                    {
+                        errorList.Add(error.ErrorMessage);
+                    }
+                    return new ErrorDataResult<List<string>>(errorList, "Check your fields.");
+                }
+                _phoneDal.Update(phone);
+                return new SuccessResult("Phone updated succesfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogDebug(ex.Message, ex.StackTrace);
+                return new ErrorResult("Error occurred during operation, please try again later.");
+            }
         }
 
-        public void AddNewPhone(Phone phone)
+        public IResult AddNewPhone(Phone phone)
         {
-            _phoneDal.Add(phone);
+            try
+            {
+                var validator = new PhoneValidator();
+                var validationResult = validator.Validate(phone);
+                if (!validationResult.IsValid)
+                {
+                    List<string> errorList = new();
+                    foreach (var error in validationResult.Errors)
+                    {
+                        errorList.Add(error.ErrorMessage);
+                    }
+                    return new ErrorDataResult<List<string>>(errorList, "Check your fields.");
+                }
+                _phoneDal.Add(phone);
+                return new SuccessResult("Phone added succesfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogDebug(ex.Message, ex.StackTrace);
+                return new ErrorResult("Error occurred during operation, please try again later.");
+            }            
         }
 
-        public Phone GetPhoneById(int phoneId)
+        public IDataResult<Phone> GetPhoneById(int phoneId)
         {
-            return _phoneDal.Get(x=>x.Id== phoneId);
+            var result = _phoneDal.Get(x => x.Id == phoneId);
+            return new SuccessDataResult<Phone>(result); 
         }
     }
 }

@@ -1,12 +1,13 @@
-﻿using Entities.Concrete;
+﻿using Core.Utilities.Results;
+using Entities.Concrete;
 
 namespace Business.Abstract
 {
     public interface IPersonService
     {
-        public List<Person> GetAllPerson();
-        public void UpdatePerson(Person person);
-        public void AddNewPerson(Person person);
-        public Person GetPersonById(int personId);
+        public IDataResult<List<Person>> GetAllPerson();
+        public IResult UpdatePerson(Person person);
+        public IResult AddNewPerson(Person person);
+        public IDataResult<Person> GetPersonById(int personId);
     }
 }

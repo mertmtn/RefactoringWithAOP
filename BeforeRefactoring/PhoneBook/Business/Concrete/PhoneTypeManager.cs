@@ -1,4 +1,6 @@
 ﻿using Business.Abstract;
+using Core.Utilities.Results;
+using Core.Utilities.Results.Success;
 using Data.Abstract;
 using Entities.Concrete;
 using Microsoft.Extensions.Logging; 
@@ -15,10 +17,11 @@ namespace Business.Concrete
             _phoneTypeDal = phoneTypeDal;
         } 
 
-        public List<PhoneType> GetAllPhoneType()
+        public IDataResult<List<PhoneType>> GetAllPhoneType()
         {
             _logger.LogDebug("Inside GetAllPhoneType endpoint");
-            return _phoneTypeDal.GetAll();
+            var result = _phoneTypeDal.GetAll();
+            return new SuccessDataResult<List<PhoneType>>(result);
         }
     }
 }

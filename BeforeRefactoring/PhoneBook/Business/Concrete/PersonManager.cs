@@ -1,7 +1,15 @@
 ﻿using Business.Abstract;
+using Business.ValidatonRules.FluentValidation;
+using Core.Utilities.Results;
+using Core.Utilities.Results.Error;
+using Core.Utilities.Results.Success;
 using Data.Abstract;
+using Data.Concrete.EntityFramework;
 using Entities.Concrete;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Business.Concrete
 {
@@ -15,25 +23,67 @@ namespace Business.Concrete
             _personDal = personDal;
         }
 
-        public List<Person> GetAllPerson()
+        public IDataResult<List<Person>> GetAllPerson()
         {
             _logger.LogDebug("Inside GetAllPerson endpoint");
-            return _personDal.GetAll();
+            var result = _personDal.GetAll();
+            return new SuccessDataResult<List<Person>>(result);
         }
 
-        public void UpdatePerson(Person person)
+        public IResult UpdatePerson(Person person)
         {
-            _personDal.Update(person);
+            try
+            {
+                var validator = new PersonValidator();
+                var validationResult = validator.Validate(person);
+                if (!validationResult.IsValid)
+                {
+                    List<string> errorList = new();
+                    foreach (var error in validationResult.Errors)
+                    {
+                        errorList.Add(error.ErrorMessage);
+                    }
+                    return new ErrorDataResult<List<string>>(errorList, "Alanları kontrol ediniz.");
+                }
+                _personDal.Update(person);
+                return new SuccessResult("Person updated successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogDebug(ex.Message, ex.StackTrace);
+                return new ErrorResult("Error occurred during operation, please try again later.");
+            }
         }
 
-        public void AddNewPerson(Person person)
+        public IResult AddNewPerson(Person person)
         {
-            _personDal.Add(person);
+            try
+            {
+                var validator = new PersonValidator();
+                var validationResult = validator.Validate(person);
+                if (!validationResult.IsValid)
+                {
+                    List<string> errorList = new();
+                    foreach (var error in validationResult.Errors)
+                    {
+                        errorList.Add(error.ErrorMessage);
+                    }
+                    return new ErrorDataResult<List<string>>(errorList, "Alanları kontrol ediniz.");
+                }
+                _personDal.Add(person);
+                return new SuccessResult("Person added successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogDebug(ex.Message, ex.StackTrace);
+                return new ErrorResult("Error occurred during operation, please try again later.");
+            }
         }
 
-        public Person GetPersonById(int personId)
+        public IDataResult<Person> GetPersonById(int personId)
         {
-            return _personDal.Get(x=>x.Id==personId);
+            var result = _personDal.Get(x => x.Id == personId);
+            return new SuccessDataResult<Person>(result);
         }
     }
 }

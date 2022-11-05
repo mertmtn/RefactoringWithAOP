@@ -1,8 +1,7 @@
 using Business.Abstract;
 using Business.Concrete;
 using Data.Abstract;
-using Data.Concrete.EntityFramework;
-using Microsoft.EntityFrameworkCore;
+using Data.Concrete.EntityFramework; 
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,7 +14,7 @@ var logger = new LoggerConfiguration()
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

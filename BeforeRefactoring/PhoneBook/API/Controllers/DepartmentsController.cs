@@ -30,14 +30,14 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post(Department department)
+        public IActionResult Post([FromBody]Department department)
         {
             var result = _departmentService.AddNewDepartment(department);
             return StatusCode(result.Success ? 200 : 400, result);
         }
 
         [HttpPut]
-        public IActionResult Put(Department department)
+        public IActionResult Put([FromBody] Department department)
         {
             var result = _departmentService.UpdateDepartment(department);
             return StatusCode(result.Success ? 200 : 400,result);

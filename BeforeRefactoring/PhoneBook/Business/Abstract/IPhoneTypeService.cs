@@ -1,9 +1,10 @@
-﻿using Entities.Concrete;
+﻿using Core.Utilities.Results;
+using Entities.Concrete;
 
 namespace Business.Abstract
 {
     public interface IPhoneTypeService
     {
-        public List<PhoneType> GetAllPhoneType();
+        public IDataResult<List<PhoneType>> GetAllPhoneType();
     }
 }
