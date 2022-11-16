@@ -1,10 +1,17 @@
-using Business.Abstract;
-using Business.Concrete;
-using Data.Abstract;
-using Data.Concrete.EntityFramework; 
 using Serilog;
+using Autofac;
+using Business.DependencyResolvers.Autofac;
+using Autofac.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+
+// Call ConfigureContainer on the Host sub property 
+builder.Host.ConfigureContainer<ContainerBuilder>(builder =>
+{
+    builder.RegisterModule(new AutofacBusinessModule());
+});
+
 
 // Add services to the container.
 var logger = new LoggerConfiguration()
@@ -17,15 +24,14 @@ builder.Logging.AddSerilog(logger);
 builder.Services.AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddTransient<IDepartmentService, DepartmentManager>();
-builder.Services.AddSingleton<IDepartmentDal, EfDepartmentDal>();
-builder.Services.AddTransient<IPersonService, PersonManager>();
-builder.Services.AddSingleton<IPersonDal, EfPersonDal>();
-builder.Services.AddTransient<IPhoneTypeService, PhoneTypeManager>();
-builder.Services.AddSingleton<IPhoneTypeDal, EfPhoneTypeDal>();
-builder.Services.AddTransient<IPhoneService, PhoneManager>();
-builder.Services.AddSingleton<IPhoneDal, EfPhoneDal>();
+builder.Services.AddSwaggerGen(); 
+builder.Services.AddMemoryCache();
+
+
+//builder.Services.AddDependencyResolvers(new ICoreModule[]
+//{
+//                new CoreModule(),
+//});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

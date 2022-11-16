@@ -4,25 +4,43 @@ using Core.Utilities.Results;
 using Core.Utilities.Results.Error;
 using Core.Utilities.Results.Success;
 using Data.Abstract;
-using Entities.Concrete; 
+using Entities.Concrete;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 
 namespace Business.Concrete
 {
     public class DepartmentManager : IDepartmentService
     {
+        private readonly IMemoryCache _memoryCache;
         private readonly IDepartmentDal _departmentDal;
         private readonly ILogger<DepartmentManager> _logger;
-        public DepartmentManager(IDepartmentDal departmentDal, ILogger<DepartmentManager> logger)
+        public DepartmentManager(IDepartmentDal departmentDal, ILogger<DepartmentManager> logger, IMemoryCache memoryCache)
         {
             _logger = logger;
-            _departmentDal = departmentDal;
+            _departmentDal = departmentDal; 
+            _memoryCache = memoryCache;
         }
 
         public IDataResult<List<Department>> GetAllDepartment()
         {
             _logger.LogDebug("Inside GetAllDepartment endpoint");
+            const string key = "GetAllDepartment";
+            if (_memoryCache.TryGetValue(key, out object list))
+            {
+                _logger.LogDebug("Inside GetAllDepartment endpoint cached");
+                var cachedList = (List<Department>)list;
+                return new SuccessDataResult<List<Department>>(cachedList);
+            }
+
+            var departmentList = _departmentDal.GetAll();
+            _memoryCache.Set(key, departmentList, new MemoryCacheEntryOptions
+            {
+                AbsoluteExpiration = DateTime.Now.AddSeconds(20),
+                Priority = CacheItemPriority.Normal
+            });
             return new SuccessDataResult<List<Department>>(_departmentDal.GetAll());
         }
 
