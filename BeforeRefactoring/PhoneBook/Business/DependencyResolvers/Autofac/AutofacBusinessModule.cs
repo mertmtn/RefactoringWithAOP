@@ -6,11 +6,6 @@ using Castle.DynamicProxy;
 using Core.Utilities.Interceptors;
 using Data.Abstract;
 using Data.Concrete.EntityFramework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Business.DependencyResolvers.Autofac
 {
@@ -27,13 +22,12 @@ namespace Business.DependencyResolvers.Autofac
             builder.RegisterType<PhoneManager>().As<IPhoneService>().InstancePerLifetimeScope(); 
             builder.RegisterType<EfPhoneDal>().As<IPhoneDal>().InstancePerLifetimeScope();
             
-
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
 
             builder.RegisterAssemblyTypes(assembly).AsImplementedInterfaces()
                 .EnableInterfaceInterceptors(new ProxyGenerationOptions()
                 {
-                    Selector = new AspectInterceptorSelector()
+                    Selector = new AspectInterceptorSelector()                    
                 }).InstancePerLifetimeScope();
         }
     }

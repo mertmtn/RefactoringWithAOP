@@ -21,6 +21,13 @@
         {
 
         }
+        public ErrorDataResult(string message, int statusCode) : base(default, false, message, statusCode)
+        {
 
+        }
+        public ErrorDataResult(T data, int statusCode) : base(data, false, statusCode)
+        {
+
+        }
     }
 }

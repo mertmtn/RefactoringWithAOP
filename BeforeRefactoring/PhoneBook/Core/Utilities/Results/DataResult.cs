@@ -11,8 +11,17 @@
         {
             Data = data;
         }
-
-        public T Data { get; }
+        public DataResult(T data, bool success, int statusCode) : base(success)
+        {
+            Data = data;
+            StatusCode = statusCode;
+        }
+        public DataResult(T data, bool success, string message, int statusCode) : base(success, message, statusCode)
+        {
+            Data = data;
+            StatusCode = statusCode;
+        }
+        public T Data { get; set; }
 
     }
 }

@@ -7,8 +7,6 @@ using Data.Abstract;
 using Entities.Concrete;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 
 namespace Business.Concrete
 {
@@ -41,12 +39,12 @@ namespace Business.Concrete
                 AbsoluteExpiration = DateTime.Now.AddSeconds(20),
                 Priority = CacheItemPriority.Normal
             });
-            return new SuccessDataResult<List<Department>>(_departmentDal.GetAll());
+            return new SuccessDataResult<List<Department>>(_departmentDal.GetAll(), 200);
         }
 
         public IDataResult<Department> GetDepartmentById(int id)
         {
-            return new SuccessDataResult<Department>(_departmentDal.Get(x => x.Id == id));
+            return new SuccessDataResult<Department>(_departmentDal.Get(x => x.Id == id),200);
         }
 
         public IResult UpdateDepartment(Department department)
@@ -63,7 +61,7 @@ namespace Business.Concrete
                 return new ErrorDataResult<List<string>>(errorList, "Alanları kontrol ediniz.");
             }
             _departmentDal.Update(department);
-            return new SuccessResult("Update Department Success");
+            return new SuccessResult("Update Department Success",200);
         }
 
         public IResult AddNewDepartment(Department department)
@@ -80,7 +78,7 @@ namespace Business.Concrete
                 return new ErrorDataResult<List<string>>(errorList, "Alanları kontrol ediniz.");
             }
             _departmentDal.Add(department);
-            return new SuccessResult("Add Department Success");
+            return new SuccessResult("Add Department Success", 200);
         }
     }
 }

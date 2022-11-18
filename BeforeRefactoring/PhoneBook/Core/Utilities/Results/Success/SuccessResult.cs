@@ -6,7 +6,15 @@
         {
 
         }
+        public SuccessResult(string message, int statusCode) : base(true, message, statusCode)
+        {
 
+        }
+
+        public SuccessResult(int statusCode) : base(true, statusCode)
+        {
+
+        }
         public SuccessResult() : base(true)
         {
 

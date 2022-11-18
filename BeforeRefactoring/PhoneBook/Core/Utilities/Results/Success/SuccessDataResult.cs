@@ -12,7 +12,16 @@
 
         }
 
+        public SuccessDataResult(T data, int statusCode) : base(data, true, statusCode)
+        {
+
+        }
+
         public SuccessDataResult(string message) : base(default, true, message)
+        {
+
+        }
+        public SuccessDataResult(string message, int statusCode) : base(default, true, message, statusCode)
         {
 
         }

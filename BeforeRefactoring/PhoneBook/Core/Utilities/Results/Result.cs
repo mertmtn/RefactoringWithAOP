@@ -2,20 +2,29 @@
 {
     public class Result : IResult
     {
-        //Read onlyler constructorlarda set edilebilir.
         public Result(bool success)
         {
             Success = success;
         }
-
-        //this kendini kastediyor. Result sınıfı
         public Result(bool success, string message) : this(success)
         {
             Message = message;
         }
+        public Result(bool success, int statusCode)
+        {
+            Success = success;
+            StatusCode = statusCode;
+        }
 
-        public bool Success { get; }
+        public Result(bool success, string message, int statusCode) : this(success)
+        {
+            Message = message;
+            StatusCode = statusCode;
+        }
 
-        public string Message { get; }
+        public bool Success { get; set; }
+
+        public string Message { get; set; }
+        public int StatusCode { get; set; }
     }
 }
