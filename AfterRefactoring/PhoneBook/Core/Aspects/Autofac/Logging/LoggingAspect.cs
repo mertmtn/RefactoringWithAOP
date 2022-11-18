@@ -1,11 +1,11 @@
 ﻿using Castle.DynamicProxy;
-using Core.Utilities.Interceptors; 
-using System.Diagnostics; 
+using Core.Utilities.Interceptors;
+using System.Diagnostics;
 
 namespace Core.Aspects.Autofac.Logging
 {
     public class LoggingAspect : MethodInterception
-    {   
+    {
 
         public override void Intercept(IInvocation invocation)
         {
@@ -13,18 +13,12 @@ namespace Core.Aspects.Autofac.Logging
             var args = string.Join(",", invocation.Arguments.Select(a => (a ?? "").ToString()));
 
             Debug.Write($"Call: {name}");
-            Debug.Write($"Args: {args}"); 
-             
-            try
-            {
-                invocation.Proceed();
-            }
+            Debug.Write($"Args: {args}");
 
-            catch (System.Exception ex)
-            {
-                Debug.Fail(ex.Message); 
-            }
-            Debug.Write($"Done: result was {invocation.ReturnValue}"); 
+
+            invocation.Proceed();
+
+            Debug.Write($"Done: result was {invocation.ReturnValue}");
         }
     }
 }

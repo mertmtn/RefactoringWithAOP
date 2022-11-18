@@ -39,7 +39,7 @@ namespace Core.Aspects.Autofac.Exception
         protected override void OnException(IInvocation invocation, System.Exception e)
         {
             var exceptionMessage = e.Message;
-            var instance = (IResult)Activator.CreateInstance(_type, null, false, exceptionMessage);
+            var instance = (IResult)Activator.CreateInstance(_type,  false ,exceptionMessage);
 
             instance.StatusCode = 500;
             if (e is WebException webEx)
