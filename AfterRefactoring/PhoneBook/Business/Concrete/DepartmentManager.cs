@@ -1,5 +1,9 @@
 ﻿using Business.Abstract;
 using Business.ValidatonRules.FluentValidation;
+using Core.Aspects.Autofac.Caching.Microsoft;
+using Core.Aspects.Autofac.Exception;
+using Core.Aspects.Autofac.Logging;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results;
 using Core.Utilities.Results.Error;
 using Core.Utilities.Results.Success;
@@ -22,24 +26,12 @@ namespace Business.Concrete
             _memoryCache = memoryCache;
         }
 
+        [LoggingAspect()]
+        [CachingAspect(2)]
         public IDataResult<List<Department>> GetAllDepartment()
         {
-            _logger.LogDebug("Inside GetAllDepartment endpoint");
-            const string key = "GetAllDepartment";
-            if (_memoryCache.TryGetValue(key, out object list))
-            {
-                _logger.LogDebug("Inside GetAllDepartment endpoint cached");
-                var cachedList = (List<Department>)list;
-                return new SuccessDataResult<List<Department>>(cachedList);
-            }
-
-            var departmentList = _departmentDal.GetAll();
-            _memoryCache.Set(key, departmentList, new MemoryCacheEntryOptions
-            {
-                AbsoluteExpiration = DateTime.Now.AddSeconds(20),
-                Priority = CacheItemPriority.Normal
-            });
-            return new SuccessDataResult<List<Department>>(_departmentDal.GetAll(), 200);
+            var departmentList = _departmentDal.GetAll();            
+            return new SuccessDataResult<List<Department>>(departmentList, 200);
         }
 
         public IDataResult<Department> GetDepartmentById(int id)
@@ -47,36 +39,19 @@ namespace Business.Concrete
             return new SuccessDataResult<Department>(_departmentDal.Get(x => x.Id == id),200);
         }
 
+        [LoggingAspect()]
+        [ValidationAspect(typeof(DepartmentValidator))]
+        [ExceptionAspect(typeof(Result))]
         public IResult UpdateDepartment(Department department)
-        { 
-            var validator = new DepartmentValidator();
-            var validationResult = validator.Validate(department);
-            if (!validationResult.IsValid)
-            {
-                List<string> errorList = new();
-                foreach (var error in validationResult.Errors)
-                {
-                    errorList.Add(error.ErrorMessage);
-                }
-                return new ErrorDataResult<List<string>>(errorList, "Alanları kontrol ediniz.");
-            }
+        {            
             _departmentDal.Update(department);
             return new SuccessResult("Update Department Success",200);
         }
 
+        [LoggingAspect()]
+        [ValidationAspect(typeof(DepartmentValidator))]
         public IResult AddNewDepartment(Department department)
-        {
-            var validator = new DepartmentValidator();
-            var validationResult = validator.Validate(department);
-            if (!validationResult.IsValid)
-            {
-                List<string> errorList = new();
-                foreach (var error in validationResult.Errors)
-                {
-                    errorList.Add(error.ErrorMessage);
-                }
-                return new ErrorDataResult<List<string>>(errorList, "Alanları kontrol ediniz.");
-            }
+        {           
             _departmentDal.Add(department);
             return new SuccessResult("Add Department Success", 200);
         }
